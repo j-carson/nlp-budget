@@ -4,6 +4,7 @@
 |:--|:---|
 | corpus.ipynb | %loads the budget_corpus.py file for testing |
 | budget_corpus.py | Included in all the analysis notebooks so the documents are preprocessed the same in all tests |
+| cosine_similarity.ipynb | Minimum viable project notebook, looking at  cosine similarity between documents | 
 | unique_words.ipynb | Demonstrates the preponderance of low frequency words in the corpus.
 | clustering.ipynb | An attempt at clustering. This one does LSA to reduce dimensionality followed by HDBSCAN to cluster. HDBSCAN was chosen as my clusterer-of-choice because I knew that there would be unclassifiable documents, I just didn't anticipate the extent of the problem. | 
 | lda_cluster.ipynb | Another attempt at clustering. This one was to play with the LDA function to get experience with the API. This corpus is not suited for LDA analysis. |
