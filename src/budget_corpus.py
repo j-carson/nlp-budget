@@ -1,11 +1,8 @@
-
 # coding: utf-8
 
 # # Common code to read and process the corpus
 # 
 # To make sure all models are preprocessing the data in a similar way
-
-# In[97]:
 
 
 import pandas as pd
@@ -17,24 +14,13 @@ import pickle
 
 from pathlib import Path
 
-
-# In[98]:
-
-
 import gensim
 from gensim.utils import simple_preprocess
 from gensim.utils import lemmatize
 from gensim.parsing.preprocessing import STOPWORDS as gs_stopwords
 
-
-# In[99]:
-
-
 docdir = Path('../data/docs')
 datadir = Path('../data')
-
-
-# In[108]:
 
 
 def read_raw_corpus():
@@ -51,35 +37,42 @@ def read_raw_corpus():
     return raw_corpus
 
 
-# In[109]:
-
-
 def tokenize_raw_budget(raw_corpus):
-    corpus = []
-    stopwords =         """for the this that which such than with within without after from 
-        and but use each more less unless any law carry out 
-        has have are will shall may were been who its into subsection amount state grants 
-        fund funds funded costs expenses expended expenditure purchase account administration administrative
-        budget purposes during  united states national general government
-        house senate congress president office regulations act title code 
-        specified provided available further including herein
-        enactment program programs services operation operations activities activity
-        appropriation appropriations appropriated privision provisions agency agencies""".split()
     
+    # -- stemming would reduce some duplication here (e.g. section and sections)
+    # -- but that results in a lot of non-words that don't work with word2vec
+    # -- (Actually the lemmatizer may be fixing some of these, could go back
+    # -- and check. simple_precprocess was leaving the plurals when I wrote this
+    # -- list.)
+    
+    stopwords = set( """section sections subsection subsections chapter part amended
+        state federal local district grant amount amounts  
+        fund funding cost expense expend expenditure purchase account fiscal 
+        pay payment payments
+        provide provision proviso
+        administration administrative administrator
+        budget purposes united states national general government
+        office regulations act acts title code 
+        specified provided available further including herein
+        enactment program service operation operations activity
+        appropriation appropriated provision provisions department agency
+        those
+        aaa bbb ccc ddd eee""".split() )
+    stopwords.update(gs_stopwords)
     
     # tla = three (or more) letter all-capitialized acronymns
     tla = re.compile(r'[A-Z]{3,}\S*?\b')
     
+    corpus = []
     for doc in raw_corpus:
         body = re.sub(tla, '', doc)
-        tokens = simple_preprocess(body, min_len=3)
-        tokens = [ t for t in tokens if t not in stopwords ]
+        # from this lemmatization tutorial
+        # https://www.machinelearningplus.com/nlp/lemmatization-examples-python/
+        lemmatized = [wd.decode('utf-8').split('/')[0] for wd in lemmatize(body,  min_length=3)]
+        tokens = [ t for t in lemmatized if t not in stopwords ]
         corpus.append(tokens)
         
     return corpus
-
-
-# In[110]:
 
 
 def read_documents():
